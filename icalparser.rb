@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
-#
 
 puts 'Loading libs...'
 require 'rubygems'
 require 'icalendar'
 require 'date'
+require 'net/http'
+require 'net/https'
+require_relative 'config.rb'
 
 def simple_date(date)
 	return date.strftime('%A %d %B %Y %H:%M')
@@ -26,10 +28,20 @@ class Course
 end
 
 # Updates the courses hash
-def parseFile(cal_file)
+def updateCourses
+	puts 'Fetching file...'
+	uri = URI.parse(@ical_url)
+	http = Net::HTTP.new(uri.host, uri.port)
+	http.use_ssl = true
+	res = http.request_get(uri.request_uri)
+
+	parseFile res.body
+end
+
+def parseFile(cal_string)
 	puts 'Parsing file...'
 
-	cals = Icalendar.parse(cal_file)
+	cals = Icalendar.parse(cal_string)
 
 	# Look for the specific calendar we want.
 	# For now, we just take the first one (do these things have name, id, or whatever we could use to select ?)
@@ -52,10 +64,7 @@ def parseFile(cal_file)
 
 end
 
-
-cal_file = File.open("KTH.test1.ical", :encoding => 'utf-8')
-
-parseFile(cal_file)
+updateCourses
 
 @courses.each { |day,evts|
 	puts "Day: #{day}"
