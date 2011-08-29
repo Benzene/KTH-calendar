@@ -64,16 +64,20 @@ def parseFile(cal_string)
 
 end
 
+def printCourses(courses_list)
+
+	courses_list.each { |day,evts|
+		puts "Day: #{day}"
+		evts.each { |evt|
+			puts evt.summary
+			puts "From #{simple_date evt.start} to #{simple_date evt.end}"
+			puts "Location: #{evt.location}"
+			puts "Description: #{evt.description}"
+			puts ""
+		}
+	}
+end
+
 updateCourses
 
-@courses.each { |day,evts|
-	puts "Day: #{day}"
-	evts.each { |evt|
-		puts evt.summary
-		puts "From #{simple_date evt.start} to #{simple_date evt.end}"
-		puts "Location: #{evt.location}"
-		puts "Description: #{evt.description}"
-		puts ""
-	}
-}
-
+printCourses(@courses)
